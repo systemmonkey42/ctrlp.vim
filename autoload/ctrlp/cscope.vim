@@ -103,7 +103,7 @@ endfunction
 
 " Create a command to directly call the new search type
 "
-" Put this in vimrc or plugin/sample.vim
-" command! CtrlPSample call ctrlp#init(ctrlp#sample#id())
+" Put this in vimrc
+ command! CtrlPCscope call ctrlp#init(ctrlp#cscope#id())
 
 " vim:fen:fdl=0:ts=2:sw=2:sts=2
