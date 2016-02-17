@@ -95,7 +95,7 @@ function! ctrlp#cscope#accept(mode, str)
 endfunction
 
 " Give the extension an ID
-let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars) + 1
+let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 " Allow it to be called later
 function! ctrlp#cscope#id()
   return s:id
@@ -104,6 +104,6 @@ endfunction
 " Create a command to directly call the new search type
 "
 " Put this in vimrc
- command! CtrlPCscope call ctrlp#init(ctrlp#cscope#id())
+command! CtrlPCscope call ctrlp#init(ctrlp#cscope#id())
 
 " vim:fen:fdl=0:ts=2:sw=2:sts=2
