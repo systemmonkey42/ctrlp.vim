@@ -73,7 +73,7 @@ endfunction
 " Return: command
 function! ctrlp#cscope#init()
   if len(s:cscope_definitions) == 0
-	let s:cscope_definitions = map(systemlist("cscope -L -1 '.*' 2>/dev/null"), "s:parse(v:val)")
+	let s:cscope_definitions = map(systemlist("cscope -L -R -k -s . -1 '.*' 2>/dev/null"), "s:parse(v:val)")
   endif
   call s:syntax()
   return s:cscope_definitions
