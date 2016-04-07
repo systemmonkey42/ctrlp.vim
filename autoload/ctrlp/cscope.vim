@@ -72,8 +72,16 @@ endfunction
 "
 " Return: command
 function! ctrlp#cscope#init()
-  if len(s:cscope_definitions) == 0
-	let s:cscope_definitions = map(systemlist("cscope -L -R -k -s . -1 '.*' 2>/dev/null"), "s:parse(v:val)")
+	if len(s:cscope_definitions) == 0
+		" Support existing 'cscope.files' list
+		let s:cscope_files = ''
+		if filereadable('cscope.files')
+			let s:cscope_files = '-icscope.files'
+		else
+			let s:cscope_files = '-R -s .'
+		endif
+		" the -1 limits the search to function/type names, -2 for function/type usage, or -0 for both.
+		let s:cscope_definitions = map(systemlist("cscope -q -L -k " . s:cscope_files . " -1 '.*' 2>/dev/null"), "s:parse(v:val)")
   endif
   call s:syntax()
   return s:cscope_definitions
