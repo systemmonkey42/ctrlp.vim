@@ -73,15 +73,29 @@ endfunction
 " Return: command
 function! ctrlp#cscope#init()
 	if len(s:cscope_definitions) == 0
-		" Support existing 'cscope.files' list
+		" Support existing 'cscope.files' list.
 		let s:cscope_files = ''
-		if filereadable('cscope.files')
+		let s:cscope_index = '-f.cscope.out'
+		if filereadable('.git/cscope.files')
+			" It may be in the .git folder if we are at the root of the tree and the
+			" git cscope hook kicked in.
+			let s:cscope_files = '-i.git/cscope.files'
+			let s:cscope_index = '-f.git/cscope.out'
+		elseif filereadable('cscope.files')
+			" It may be in the current directory.
 			let s:cscope_files = '-icscope.files'
+			if filereadable('cscope.out')
+				let s:cscope_index = '-fcscope.out'
+			else
+				let s:cscope_index = '-f.cscope.out'
+			endif
 		else
+			" Otherwise don't create one, just scan subfolders
 			let s:cscope_files = '-R -s .'
 		endif
+
 		" the -1 limits the search to function/type names, -2 for function/type usage, or -0 for both.
-		let s:cscope_definitions = map(systemlist("cscope -q -L -k " . s:cscope_files . " -1 '.*' 2>/dev/null"), "s:parse(v:val)")
+		let s:cscope_definitions = map(systemlist("cscope -q -L -k " . s:cscope_index . " " . s:cscope_files . " -1 '.*' 2>/dev/null"), "s:parse(v:val)")
   endif
   call s:syntax()
   return s:cscope_definitions
