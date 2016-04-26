@@ -76,12 +76,14 @@ function! ctrlp#cscope#init()
 		" Support existing 'cscope.files' list.
 		let s:cscope_files = ''
 		let s:cscope_opts = ''
+    let s:gitroot = system('cd '.shellescape(expand('%:h')).'&& git rev-parse --git-dir 2>/dev/null')
+    let s:gitroot = substitute(s:gitroot, "\n", "", "g" )
 		let s:cscope_index = '.cscope.out'
-		if filereadable('.git/cscope.files')
+		if !empty(s:gitroot) && filereadable(s:gitroot.'/cscope.files')
 			" It may be in the .git folder if we are at the root of the tree and the
 			" git cscope hook kicked in.
-			let s:cscope_files = '-i.git/cscope.files'
-			let s:cscope_index = '.git/cscope.out'
+			let s:cscope_files = '-i'.s:gitroot.'/cscope.files'
+			let s:cscope_index = s:gitroot.'/cscope.out'
 		elseif filereadable('cscope.files')
 			" It may be in the current directory.
 			let s:cscope_files = '-icscope.files'
