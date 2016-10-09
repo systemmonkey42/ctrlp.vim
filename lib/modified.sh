@@ -7,7 +7,7 @@ GITROOT=$(git rev-parse --show-cdup)
 	else
 		git status --porcelain --untracked-files=all --
 	fi
-} | { 
+} | {
 	# 'safe' version, with ~'s escaped
 	SAFE_GITROOT=$( echo "${GITROOT}" | sed -e 's/\~/\\~/g')
 	sed "s~^...~${SAFE_GITROOT}~"
