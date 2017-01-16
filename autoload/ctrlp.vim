@@ -68,6 +68,7 @@ let [s:pref, s:bpref, s:opts, s:new_opts, s:lc_opts] =
 	\ 'jump_to_buffer':        ['s:jmptobuf', 'Et'],
 	\ 'key_loop':              ['s:keyloop', 0],
 	\ 'lazy_update':           ['s:lazy', 0],
+	\ 'match_case':            ['s:matchcase', 0],
 	\ 'match_func':            ['s:matcher', {}],
 	\ 'match_window':          ['s:mw', ''],
 	\ 'match_window_bottom':   ['s:mwbottom', 1],
@@ -137,6 +138,7 @@ let [s:lcmap, s:prtmaps] = ['nn <buffer> <silent>', {
 	\ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>'],
 	\ 'ToggleFocus()':        ['<s-tab>'],
 	\ 'ToggleRegex()':        ['<c-r>'],
+	\ 'ToggleCase()':         ['<delete>'],
 	\ 'ToggleByFname()':      ['<c-d>'],
 	\ 'ToggleType(1)':        ['<c-f>', '<c-up>'],
 	\ 'ToggleType(-1)':       ['<c-b>', '<c-down>'],
@@ -668,7 +670,7 @@ fu! s:Update(str)
 	if str == oldstr && !empty(str) && !exists('s:force') | retu | en
 	" Optionally send the string to a custom validate function
 	if s:validate != '' | let str = call(s:validate, [str]) | en
-	let s:martcs = &scs && str =~ '\u' ? '\C' : ''
+	let s:martcs = ( &scs && str =~ '\u' ) ? '\C' : (s:matchcase ? '\C' : '')
 	let pat = s:matcher == {} ? s:SplitPattern(str) : str
 	let lines = s:nolim == 1 && empty(str) ? copy(g:ctrlp_lines)
 		\ : s:MatchedItems(g:ctrlp_lines, pat, s:mw_res)
@@ -1023,6 +1025,11 @@ endf
 fu! s:ToggleFocus()
 	let s:focus = !s:focus
 	cal s:BuildPrompt(0)
+endf
+
+fu! s:ToggleCase()
+	let s:matchcase = !s:matchcase
+	cal s:PrtSwitcher()
 endf
 
 fu! s:ToggleRegex()
