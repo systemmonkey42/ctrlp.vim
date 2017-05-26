@@ -550,6 +550,48 @@ fu! ctrlp#buffers(...)
 endf
 " * MatchedItems() {{{1
 fu! s:MatchIt(items, pat, limit, exc)
+  if has('python')
+    let lines = []
+    python << EOF
+import re
+lines = vim.bindeval('lines')
+items = vim.eval('a:items')
+pat = vim.eval('a:pat')
+func = vim.eval('s:mfunc')
+case = vim.eval('s:martcs')
+limit = int(vim.eval('a:limit'))
+pat = re.sub(r'\\{.}','*',pat)
+if case != '\C':
+  pat = '(?i)' + pat
+exp = re.compile( pat )
+
+def matchtabs_func(val):
+ try:
+   [ key, loc ] = val.split('\t')[0:2]
+   if re.search('usr.include', loc ):
+      return None
+   if exp.search(key):
+      return [ val, len(key) ]
+   else:
+      return None
+ except:
+   return None
+
+if func == 's:matchtabs':
+   temp = map( lambda x: matchtabs_func(x), items )
+   temp = filter( lambda x: x, temp )
+   temp.sort( key=lambda x: x[1] )
+   temp = [ pat ] + map( lambda x: x[0], temp )
+elif func == 's:matchtabe':
+   temp = filter( lambda x: exp.search( x.split('\t[^\t]*$')[0] ), items )
+elif func == 's:matchfname':
+   temp = filter( lambda x: exp.search( x.split('/')[-1] ), items )
+else:
+   temp = filter( lambda x: exp.search( x ), items )
+
+lines[0:] = temp[:limit]
+EOF
+	else
 	let [lines, id] = [[], 0]
 	let pat =
 		\ s:byfname() ? map(split(a:pat, '^[^;]\+\\\@<!\zs;', 1), 's:martcs.v:val')
@@ -565,6 +607,7 @@ fu! s:MatchIt(items, pat, limit, exc)
 		if a:limit > 0 && len(lines) >= a:limit | brea | en
 	endfo
 	let s:mdata = [s:dyncwd, s:itemtype, s:regexp, s:sublist(a:items, id, -1)]
+	endif
 	retu lines
 endf
 
