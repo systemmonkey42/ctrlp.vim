@@ -581,7 +581,7 @@ if func == 's:matchtabs':
    temp = map( lambda x: matchtabs_func(x), items )
    temp = filter( lambda x: x, temp )
    temp.sort( key=lambda x: x[1] )
-   temp = [ pat ] + map( lambda x: x[0], temp )
+   temp = map( lambda x: x[0], temp )
 elif func == 's:matchtabe':
    temp = filter( lambda x: exp.search( x.split('\t[^\t]*$')[0] ), items )
 elif func == 's:matchfname':
