@@ -700,7 +700,7 @@ fu! s:BuildPrompt(upd)
 		\ : ['CtrlPPrtBase', 'CtrlPPrtBase', tr(base, '>', '-')]
 	let hibase = 'CtrlPPrtBase'
 	" Build it
-	redr
+	"redr
 	let prt = copy(s:prompt)
 	cal map(prt, 'escape(v:val, ''"\'')')
 	exe 'echoh' hibase '| echon "'.base.'"
